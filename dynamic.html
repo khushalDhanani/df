@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <!-- Primary Meta Tags -->
+    <meta charset="UTF-8">
+    <title>Build Dynamic Forms in Laravel - Complete Tutorial with Form Builder</title>
+    <meta name="title" content="Build Dynamic Forms in Laravel - Complete Tutorial with Form Builder">
+    <meta name="description" content="Learn how to create a dynamic form builder system in Laravel using jQuery Form Builder. Complete guide with code examples for form creation, submission handling, and data management.">
+    <meta name="keywords" content="Laravel, Form Builder, Dynamic Forms, PHP, Web Development, jQuery Form Builder, Laravel Tutorial, Form Management System">
+    <meta name="author" content="Your Name">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <!-- <meta property="og:url" content="https://yourdomain.com/blog/laravel-dynamic-form-builder"> -->
+    <meta property="og:title" content="Build Dynamic Forms in Laravel - Complete Tutorial with Form Builder">
+    <meta property="og:description" content="Step-by-step guide to building a dynamic form system in Laravel. Learn form creation, submission handling, and data management with practical examples.">
+    <!-- <meta property="og:image" content="https://yourdomain.com/images/laravel-form-builder-tutorial.jpg"> -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <!-- <meta property="twitter:url" content="https://yourdomain.com/blog/laravel-dynamic-form-builder"> -->
+    <meta property="twitter:title" content="Build Dynamic Forms in Laravel - Complete Tutorial with Form Builder">
+    <meta property="twitter:description" content="Create a complete dynamic form builder system in Laravel. Includes drag & drop interface, form submissions, and database integration.">
+    <!-- <meta property="twitter:image" content="https://yourdomain.com/images/laravel-form-builder-tutorial.jpg"> -->
+
+    <!-- Article Specific -->
+    <meta property="article:published_time" content="2024-02-22">
+    <meta property="article:author" content="Your Name">
+    <meta property="article:section" content="Web Development">
+    <meta property="article:tag" content="Laravel">
+    <meta property="article:tag" content="PHP">
+    <meta property="article:tag" content="Form Builder">
+    <meta property="article:tag" content="Web Development">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Code Tutorial</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <!-- PrismJS Dark Theme -->
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css">
+    
+    <style>
+        pre {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .copy-button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-dark text-light">
+
+<div class="container py-5">
+        <h1 class="text-center mb-4">Laravel Code Tutorial</h1>
+
+        <!-- Key Features -->
+        <div class="row mb-5">
+            <h2 class="mb-4">Key Features</h2>
+            <div class="col-md-4 mb-4">
+                <div class="card bg-secondary text-light feature-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Dynamic Form Creation</h5>
+                        <p class="card-text">Create custom forms using a drag-and-drop interface with various field types.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card bg-secondary text-light feature-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Form Submissions</h5>
+                        <p class="card-text">Collect and store form submissions with automatic JSON handling.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card bg-secondary text-light feature-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Submission Management</h5>
+                        <p class="card-text">View and manage form submissions with an intuitive interface.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Components -->
+        <div class="section">
+            <h2>System Components</h2>
+            
+            <h3 class="mt-4">1. Database Structure</h3>
+            <div class="card bg-secondary text-light mb-4">
+                <div class="card-body">
+                    <h5>Forms Table</h5>
+                    <ul>
+                        <li><code class="text-info">id</code> - Auto-incrementing primary key</li>
+                        <li><code class="text-info">title</code> - Form title</li>
+                        <li><code class="text-info">form_data</code> - JSON field storing form structure</li>
+                        <li><code class="text-info">timestamps</code> - Created and updated timestamps</li>
+                    </ul>
+
+                    <h5 class="mt-3">Form Submissions Table</h5>
+                    <ul>
+                        <li><code class="text-info">id</code> - Auto-incrementing primary key</li>
+                        <li><code class="text-info">form_id</code> - Foreign key to forms table</li>
+                        <li><code class="text-info">submission_data</code> - JSON field storing submitted data</li>
+                        <li><code class="text-info">timestamps</code> - Created and updated timestamps</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>2. Routes Configuration</h3>
+            <div class="card bg-secondary text-light mb-4">
+                <div class="card-body">
+                    <p>The application uses RESTful routes for form management:</p>
+                    <ul>
+                        <li><code class="text-info">GET /forms</code> - List all forms</li>
+                        <li><code class="text-info">GET /forms/create</code> - Show form builder</li>
+                        <li><code class="text-info">POST /forms</code> - Save new form</li>
+                        <li><code class="text-info">GET /form/{id}</code> - Show form for submission</li>
+                        <li><code class="text-info">POST /form/{id}/submit</code> - Handle form submission</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>3. Frontend Components</h3>
+            <div class="card bg-secondary text-light mb-4">
+                <div class="card-body">
+                    <h5>Key Views</h5>
+                    <ul>
+                        <li><code class="text-info">forms/create.blade.php</code> - Form builder interface</li>
+                        <li><code class="text-info">forms/index.blade.php</code> - Forms listing</li>
+                        <li><code class="text-info">forms/show.blade.php</code> - Form display and submission</li>
+                        <li><code class="text-info">forms/submissions.blade.php</code> - View form submissions</li>
+                    </ul>
+
+                    <h5 class="mt-3">JavaScript Libraries</h5>
+                    <ul>
+                        <li>jQuery - DOM manipulation and AJAX</li>
+                        <li>jQuery UI - Drag and drop functionality</li>
+                        <li>Form Builder - Dynamic form creation</li>
+                        <li>Form Render - Form display</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Web Routes Code -->
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">Routes - web.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+// routes/web.php
+
+// Form Routes
+Route::get('/forms', [FormController::class, 'index'])->name('forms.index');
+Route::get('/forms/create', [FormController::class, 'create'])->name('forms.create');
+Route::post('/forms', [FormController::class, 'store'])->name('form.store');
+
+Route::get('/form/{id}', [FormController::class, 'show'])->name('form.show');
+Route::post('/form/{id}/submit', [FormController::class, 'submit'])->name('form.submit');
+
+Route::put('/form/{form_id}/submission/{submission_id}', [FormController::class, 'updateSubmission'])->name('form.updateSubmission');
+
+// Form Submissions
+Route::get('/forms/{form}/submissions', [FormSubmissionController::class, 'show'])->name('form.submissions.show');
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <!-- Form Model and Migration -->
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">Model & Migration - Form</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+php artisan make:model Form -m
+
+// Model
+// app/Models/Form.php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Form extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['title', 'form_data'];
+
+    protected $casts = [
+        'form_data' => 'array'
+    ];
+
+    public function submissions()
+    {
+        return $this->hasMany(FormSubmission::class);
+    }
+}
+
+// Migration
+// database/migrations/xxxx_xx_xx_xxxxxx_create_forms_table.php
+
+Schema::create('forms', function (Blueprint $table) {
+    $table->id();
+    $table->string('title');
+    $table->json('form_data');
+    $table->timestamps();
+});
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <!-- FormSubmission Model & Migration -->
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">Model & Migration - FormSubmission</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+php artisan make:model FormSubmission -m
+
+// Model
+// app/Models/FormSubmission.php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class FormSubmission extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['form_id', 'submission_data'];
+
+    protected $casts = [
+        'submission_data' => 'array'
+    ];
+
+    public function form()
+    {
+        return $this->belongsTo(Form::class);
+    }
+}
+
+// Migration
+// database/migrations/xxxx_xx_xx_xxxxxx_create_form_submissions_table.php
+
+Schema::create('form_submissions', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('form_id')->constrained('forms')->onDelete('cascade');
+    $table->json('submission_data');
+    $table->timestamps();
+});
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <!-- Form Controller -->
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">Controller - FormController</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+// app/Http/Controllers/FormController.php
+
+namespace App\Http\Controllers;
+
+use App\Models\Form;
+use App\Models\FormSubmission;
+use Illuminate\Http\Request;
+
+class FormController extends Controller
+{
+    public function index()
+    {
+        $forms = Form::withCount('submissions')->latest()->get();
+        return view('forms.index', compact('forms'));
+    }
+
+    public function create()
+    {
+        return view('forms.create');
+    }
+
+    public function store(Request $request)
+    {
+        Form::create([
+            'title' => $request->title,
+            'form_data' => $request->form_data
+        ]);
+
+        return redirect()->route('forms.index')->with('success', 'Form created successfully!');
+    }
+
+    public function show($id)
+    {
+        $form = Form::findOrFail($id);
+        return view('forms.show', compact('form'));
+    }
+
+    public function submit(Request $request, $id)
+    {
+        $form = Form::findOrFail($id);
+
+        FormSubmission::create([
+            'form_id' => $form->id,
+            'submission_data' => json_encode($request->except('_token'))
+        ]);
+
+        return redirect()->route('forms.index')->with('success', 'Form submitted successfully!');
+    }
+
+    public function showSubmissions($id)
+    {
+        $form = Form::with('submissions')->findOrFail($id);
+        $submissions = $form->submissions;
+
+        return view('forms.submissions.show', compact('form', 'submissions'));
+    }
+
+    public function updateSubmission(Request $request, $form_id, $submission_id)
+    {
+        $submission = FormSubmission::where('form_id', $form_id)->where('id', $submission_id)->firstOrFail();
+
+        $submission->update([
+            'submission_data' => json_encode($request->except('_token', '_method'))
+        ]);
+
+        return redirect()->back()->with('success', 'Submission updated successfully!');
+    }
+}
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">resources/views/forms/create.blade.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+@extends('layouts.app')
+
+@section('title', 'Create Form')
+
+@section('content')
+&lt;div class="container mt-4"&gt;
+    &lt;h4&gt;Form Builder&lt;/h4&gt;
+
+    &lt;!-- Form Title Input --&gt;
+    &lt;div class="mb-3"&gt;
+        &lt;label for="form-title" class="form-label"&gt;Form Name:&lt;/label&gt;
+        &lt;input type="text" id="form-title" class="form-control" placeholder="Enter form name"&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Form Builder --&gt;
+    &lt;div id="form-builder"&gt;&lt;/div&gt;
+    
+    &lt;!-- Save Button --&gt;
+    &lt;button id="save-form" class="btn btn-success mt-3"&gt;Save Form&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- jQuery and Form Builder Scripts --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-sortable/1.0.0/jquery-ui-sortable.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://formbuilder.online/assets/js/form-builder.min.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+    $(document).ready(function () {
+        var fb = $('#form-builder').formBuilder({
+            disableFields: ['autocomplete'], 
+            controlOrder: ['text', 'textarea', 'number', 'date', 'select'],
+            i18n: { locale: 'en-US', disable: true }  
+        });
+
+        $('#save-form').click(function () {
+            var formData = fb.actions.getData('json');
+            var formTitle = $('#form-title').val().trim();
+
+            // Validate form name
+            if (formTitle === "") {
+                alert("Please enter a form name.");
+                return;
+            }
+
+            $.post("{{ route('form.store') }}", {
+                _token: "{{ csrf_token() }}",
+                title: formTitle,  // Use entered form name
+                form_data: formData
+            }, function(response) {
+                alert("Form saved successfully!");
+                window.location.href = "{{ route('forms.index') }}";
+            });
+        });
+    });
+&lt;/script&gt;
+@endsection
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+           <!-- Blade Forms List -->
+           <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">resources/views/forms/index.blade.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+@extends('layouts.app')
+
+@section('title', 'Forms List')
+
+@section('content')
+&lt;div class="container mt-4"&gt;
+    &lt;a href="{{ route('forms.create') }}" class="btn btn-primary mb-3"&gt;Create New Form&lt;/a&gt;
+    &lt;table class="table table-bordered"&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;Form Name&lt;/th&gt;
+                &lt;th&gt;Submissions&lt;/th&gt;
+                &lt;th&gt;Actions&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            @foreach($forms as $form)
+                &lt;tr&gt;
+                    &lt;td&gt;{{ $form->title }}&lt;/td&gt;
+                    &lt;td&gt;{{ $form->submissions_count }}&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;a href="{{ route('form.show', $form->id) }}" class="btn btn-primary btn-sm"&gt;Fill Form&lt;/a&gt;
+                        &lt;a href="{{ route('form.submissions.show', $form->id) }}" class="btn btn-info btn-sm"&gt;View Submissions&lt;/a&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+            @endforeach
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+@endsection
+                    </code>
+                </pre>
+            </div>
+        </div>
+ <!-- Blade Form Builder -->
+ <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">resources/views/forms/show.blade.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+@extends('layouts.app')
+
+@section('title', 'Fill Form')
+
+@section('content')
+&lt;div class="container mt-4"&gt;
+    &lt;h4&gt;{{ $form->title }}&lt;/h4&gt;
+
+    &lt;form id="dynamic-form" method="POST" action="{{ route('form.submit', $form->id) }}"&gt;
+        @csrf
+        &lt;div id="rendered-form"&gt;&lt;/div&gt;
+        &lt;button type="submit" class="btn btn-success mt-3"&gt;Submit Form&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-sortable/1.0.0/jquery-ui-sortable.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://formbuilder.online/assets/js/form-render.min.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+    $(document).ready(function () {
+        var formData = {!! $form->form_data !!}; // Get saved form JSON
+        $('#rendered-form').formRender({ formData: formData });
+    });
+&lt;/script&gt;
+@endsection
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <!-- Blade Form Submissions -->
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">resources/views/forms/submissions.blade.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+@extends('layouts.app')
+
+@section('title', 'Form Submissions')
+
+@section('content')
+&lt;div class="container mt-4"&gt;
+    &lt;h4&gt;Submissions for {{ $form->title }}&lt;/h4&gt;
+    &lt;table class="table table-bordered"&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;#&lt;/th&gt;
+                &lt;th&gt;Submitted Data&lt;/th&gt;
+                &lt;th&gt;Date&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            @foreach ($submissions as $submission)
+                &lt;tr&gt;
+                    &lt;td&gt;{{ $loop->iteration }}&lt;/td&gt;
+                    &lt;td&gt;
+                        @php $data = json_decode($submission->submission_data, true); @endphp
+                        @foreach ($data as $key => $value)
+                            &lt;strong&gt;{{ $key }}:&lt;/strong&gt; {{ $value }}&lt;br&gt;
+                        @endforeach
+                    &lt;/td&gt;
+                    &lt;td&gt;{{ $submission->created_at->format('Y-m-d H:i:s') }}&lt;/td&gt;
+                &lt;/tr&gt;
+            @endforeach
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+@endsection
+                    </code>
+                </pre>
+            </div>
+        </div>
+ <!-- Blade Layout -->
+ <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">resources/views/layouts/app.blade.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;@yield('title', 'Form Builder')&lt;/title&gt;
+    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;nav class="navbar navbar-expand-lg navbar-dark bg-dark"&gt;
+    &lt;div class="container"&gt;
+        &lt;a class="navbar-brand" href="{{ route('forms.index') }}"&gt;Form Builder&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;div class="container mt-4"&gt;
+    @yield('content')
+&lt;/div&gt;
+
+&lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code>
+                </pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- PrismJS Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+
+    <!-- Copy Button Script -->
+    <script>
+        document.querySelectorAll(".copy-button").forEach(button => {
+            button.addEventListener("click", function() {
+                let code = this.nextElementSibling.innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    this.textContent = "Copied!";
+                    setTimeout(() => (this.textContent = "Copy"), 1500);
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
