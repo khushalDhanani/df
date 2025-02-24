@@ -72,7 +72,7 @@
 <body class="bg-dark text-light">
 
 <div class="container py-5">
-        <h1 class="text-center mb-4">Laravel Code Tutorial</h1>
+        <h1 class="text-center mb-4">Build Dynamic Forms in Laravel - Complete Tutorial with Form Builder</h1>
 
         <!-- Key Features -->
         <div class="row mb-5">
@@ -362,6 +362,32 @@ class FormController extends Controller
             </div>
         </div>
 
+        <!-- FormSubmission Controller -->
+        <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">Controller - FormSubmissionController</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+// app/Http/Controllers/FormSubmissionController.php
+
+namespace App\Http\Controllers;
+
+use App\Models\Form;
+
+class FormSubmissionController extends Controller
+{
+    public function show(Form $form)
+    {
+        $submissions = $form->submissions()->latest()->paginate(10); // ✅ Paginate submissions (10 per page)
+        return view('forms.submissions.show', compact('form', 'submissions'));
+    }
+}
+                    </code>
+                </pre>
+            </div>
+        </div>
+
         <div class="card bg-secondary text-light mb-4">
             <div class="card-header">resources/views/forms/create.blade.php</div>
             <div class="card-body">
@@ -548,6 +574,89 @@ class FormController extends Controller
         &lt;/tbody&gt;
     &lt;/table&gt;
 &lt;/div&gt;
+@endsection
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+         <!-- Blade Form Submission Show -->
+         <div class="card bg-secondary text-light mb-4">
+            <div class="card-header">resources/views/forms/submissions/show.blade.php</div>
+            <div class="card-body">
+                <pre class="language-php position-relative">
+                    <button class="copy-button btn btn-sm btn-light">Copy</button>
+                    <code>
+@extends('layouts.app')
+
+@section('title', 'Form Submissions')
+
+@section('content')
+&lt;div class="container mt-4"&gt;
+    &lt;h4&gt;{{ $form->title }} - Submissions&lt;/h4&gt;
+
+    @if ($submissions->isEmpty())
+        &lt;p class="text-muted"&gt;No submissions yet.&lt;/p&gt;
+    @else
+        &lt;ul class="nav nav-tabs" id="submissionTabs"&gt;
+            @foreach ($submissions as $index => $submission)
+                &lt;li class="nav-item"&gt;
+                    &lt;a class="nav-link {{ $index == 0 ? 'active' : '' }}" data-bs-toggle="tab" href="#submission-{{ $submission->id }}"&gt;
+                        Submission #{{ $index + 1 }}
+                    &lt;/a&gt;
+                &lt;/li&gt;
+            @endforeach
+        &lt;/ul&gt;
+
+        &lt;div class="tab-content mt-3"&gt;
+            @foreach ($submissions as $index => $submission)
+                &lt;div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}" id="submission-{{ $submission->id }}"&gt;
+                    &lt;form id="submission-form-{{ $submission->id }}" method="POST" action="{{ route('form.updateSubmission', [$form->id, $submission->id]) }}"&gt;
+                        @csrf
+                        @method('PUT')
+
+                        &lt;div class="rendered-form"&gt;&lt;/div&gt;
+
+                        &lt;button type="submit" class="btn btn-primary mt-3"&gt;Update Submission&lt;/button&gt;
+                    &lt;/form&gt;
+                &lt;/div&gt;
+            @endforeach
+        &lt;/div&gt;
+    @endif
+&lt;/div&gt;
+
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-sortable/1.0.0/jquery-ui-sortable.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://formbuilder.online/assets/js/form-render.min.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+    $(document).ready(function () {
+        var formData = {!! $form->form_data !!}; // Get form structure
+
+        @foreach ($submissions as $submission)
+            var submissionData = {!! $submission->submission_data !!}; // Get stored values
+
+            $('#submission-form-{{ $submission->id }} .rendered-form').formRender({ formData: formData });
+
+            // Populate fields with submitted values
+            Object.keys(submissionData).forEach(function (key) {
+                var field = $('#submission-form-{{ $submission->id }}').find(`[name="${key}"]`);
+                if (field.length) {
+                    if (field.attr('type') === 'checkbox' || field.attr('type') === 'radio') {
+                        field.each(function () {
+                            if ($(this).val() == submissionData[key]) {
+                                $(this).prop('checked', true);
+                            }
+                        });
+                    } else {
+                        field.val(submissionData[key]);
+                    }
+                }
+            });
+        @endforeach
+    });
+&lt;/script&gt;
 @endsection
                     </code>
                 </pre>
